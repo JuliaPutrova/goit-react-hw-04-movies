@@ -18,21 +18,37 @@ const BASE_URL = "https://image.tmdb.org/t/p/w500";
 function MovieDetailsPage() {
   const [movie, setMovie] = useState([]);
   //когда мы кликаем на фильм в параматрах url получаем id фильма, поэтому с помощью id в useEffect мы можем отправлять запросы к конкретным фильмам по id отрисовывать
-  const params = useParams();
+  const { movieId } = useParams();
   // console.log(params); // {movieId: '438631'}
   const history = useHistory();
   const location = useLocation();
 
+  let locationValue = location.state;
+  if (location.state) {
+    locationValue = location.state.from;
+  }
+
   useEffect(() => {
-    fetchMovieDetails(params.movieId).then((film) => setMovie(film));
-  }, [params.movieId]);
+    fetchMovieDetails(movieId).then((film) => setMovie(film));
+  }, [movieId]);
   if (movie === null) {
     return <h1>Данных по фильму нет</h1>;
   }
 
   const handleBack = () => {
-    history.push(location?.state?.from);
+    history.push(location?.state?.from ?? "/");
   };
+
+  //пример перехода на страницу назад
+  // const handleBack = () => {
+  //   const valueURL = history.location.pathname;
+
+  //   if (valueURL.includes("cast") || valueURL.includes("reviews")) {
+  //     history.go(-1);
+  //   }
+
+  //   history.goBack();
+  // };
 
   return (
     <>
@@ -47,8 +63,8 @@ function MovieDetailsPage() {
       <p>{movie.overview}</p>
       <NavLink
         to={{
-          pathname: `/movies/${params.movieId}/cast`,
-          state: { from: location.state },
+          pathname: `/movies/${movieId}/cast`,
+          state: { from: locationValue },
         }}
         className={styles.link}
         activeClassName={styles.activeLink}
@@ -57,8 +73,8 @@ function MovieDetailsPage() {
       </NavLink>
       <NavLink
         to={{
-          pathname: `/movies/${params.movieId}/reviews`,
-          state: { from: location.state },
+          pathname: `/movies/${movieId}/reviews`,
+          state: { from: locationValue },
         }}
         className={styles.link}
         activeClassName={styles.activeLink}
@@ -68,12 +84,12 @@ function MovieDetailsPage() {
 
       <Suspense fallback={<h1>Loading... Please wait</h1>}>
         <Switch>
-          <Route path={`/movies/${params.movieId}/cast`}>
-            <Cast movieId={params.movieId} />
+          <Route path={`/movies/${movieId}/cast`}>
+            <Cast movieId={movieId} />
           </Route>
 
-          <Route path={`/movies/${params.movieId}/reviews`}>
-            <Reviews movieId={params.movieId} />
+          <Route path={`/movies/${movieId}/reviews`}>
+            <Reviews movieId={movieId} />
           </Route>
         </Switch>
       </Suspense>
@@ -83,6 +99,9 @@ function MovieDetailsPage() {
 
 export default MovieDetailsPage;
 
-//кликая на Go back мы проверяем location state from, если он будет nulll undefined врент на homepage, если location state from вернет строку, то оно вернется по тому пути что вернет нам location state from
-//добавляем 2 раута, добавляем 2 linka, и в этих компонентам используем useEffect дл получения данных поcasty rewies
-//делаем lazy
+// <button type="button" onClick={handleBack}>
+//   <span>
+//     <AiOutlineRollback size={20} />
+//   </span>
+//   Go back
+// </button>;

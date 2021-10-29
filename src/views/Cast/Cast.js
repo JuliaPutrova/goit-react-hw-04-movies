@@ -7,9 +7,11 @@ const BASE_URL = "https://image.tmdb.org/t/p/w500";
 
 function Cast({ movieId }) {
   const [cast, setCast] = useState([]);
+
   useEffect(() => {
     fetchActors(movieId).then((response) => setCast(response.cast));
   }, [movieId]);
+
   return (
     <>
       <ul className={styles.list}>
@@ -28,7 +30,8 @@ function Cast({ movieId }) {
   );
 }
 
-Cast.propTypes = {
-  movieId: PropTypes.string.isRequired,
-};
+// Cast.propTypes = {
+//   movieId: PropTypes.string.isRequired,
+// };
+
 export default Cast;
